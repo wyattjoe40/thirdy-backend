@@ -27,7 +27,14 @@ db.once('open', function() {
 
 require('./models/Challenge')
 require('./models/User')
+require('./models/ChallengeParticipation')
+require('./models/DailyFeedback')
 //require('./mock/mockChallenges')
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${JSON.stringify(req.url)} was called`)
+  next()
+})
 
 /**
  * Setup the API endpoint router

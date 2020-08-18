@@ -1,25 +1,52 @@
 const njwt = require('njwt')
+const config = require('../config')
 
-function jwt(req, res, next) {
-  // read the jwt
-  const auth = req.header("Authorization")
-  if (!auth) {
-    console.log("No JWT")
-    return next()
-  }
-
-  const splitJwt = auth.split(" ");
-
-  if (splitJwt.count != 2) {
-    console.log("Wrong number of JWT parts. Count: " + splitJwt.count)
-    return next()
-  }
-
-  const jwt = splitJwt[1];
-
-  console.log(auth)
-  res.jwt = auth
-  next()
+function setAuthInfoOnReq(req, verifiedJwt) {
+  req.jwt = verifiedJwt
+  req.user = { username: verifiedJwt.body.sub, id: verifiedJwt.body.subId }
 }
 
-module.exports = jwt
+function jwtRequired(req, res, next) {
+  // grab the jwt token
+  const jwt = req.cookies["jwt"];
+  if (!jwt) {
+    return res.status(401).send("No JWT found")
+  }
+
+  // verify it is valid
+  njwt.verify(jwt, config.jwtSecret, (err, verifiedJwt) => {
+    if (err) {
+      console.log('jwt verify err: ' + err)
+      return res.status(401).send("Invalid JWT")
+    }
+
+    setAuthInfoOnReq(req, verifiedJwt)
+    next()
+  })
+}
+
+function jwtOptional(req, res, next) {
+  // grab the jwt token
+  const jwt = req.cookies["jwt"];
+  if (!jwt) {
+    return next()
+  }
+
+  // verify it is valid
+  njwt.verify(jwt, config.jwtSecret, (err, verifiedJwt) => {
+    if (err) {
+      console.log('jwt verify err: ' + err)
+      return next()
+    }
+
+    setAuthInfoOnReq(req, verifiedJwt)
+    next()
+  })
+}
+
+const auth = {
+  required: jwtRequired,
+  optional: jwtOptional
+}
+
+module.exports = auth

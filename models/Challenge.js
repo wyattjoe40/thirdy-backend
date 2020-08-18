@@ -1,18 +1,32 @@
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-const challengeSchema = new mongoose.Schema({
+const challengeSchema = new Schema({
   slug: {type:String, lowercase: true, unique: true},
   title: String,
   description: String,
-  createdAt: String
+  createdAt: String,
+  author: { type: Schema.Types.ObjectId, ref: 'User'},
 }, {timestamps: true});
 
-challengeSchema.methods.toJSON = function() {
+challengeSchema.methods.createSlug = function() {
+  // TODO wydavis: Implement and hookup
+}
+
+challengeSchema.methods.toChallengeJSON = function() {
   return {
     "slug": this.slug,
     "title": this.title,
     "description": this.description,
-    "createdAt": this.createdAt
+    "createdAt": this.createdAt,
+    "author": this.author,
+  }
+}
+
+challengeSchema.methods.toMinimalJSON = function() {
+  return {
+    "slug": this.slug,
+    "title": this.title,
   }
 }
 
