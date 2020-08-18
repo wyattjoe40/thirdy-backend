@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const Challenge = mongoose.model('Challenge')
 const ChallengeParticipation = mongoose.model('ChallengeParticipation')
-const DailyFeedback = mongoose.model('DailyFeedback')
+//const DailyFeedback = mongoose.model('DailyFeedback')
 
 router.param('participationId', (req, res, next, id) => {
   // get the participation
@@ -38,6 +38,8 @@ router.get('/:participationId', auth.required, verifyUserIsAllowedAccess, (req, 
 })
 
 router.put('/:participationId', auth.required, verifyUserIsAllowedAccess, (req, res) => {
+  const challengeParticipation = req.challengeParticipation
+
   const status = req.body.status
   if (status) {
     challengeParticipation.status = status;
@@ -51,13 +53,26 @@ router.put('/:participationId', auth.required, verifyUserIsAllowedAccess, (req, 
         // invalid dailyFeedback object
         return res.sendStatus(400)
       }
+
+      const newDailyFeedback = {}
+      newDailyFeedback.day = dailyFeedback.day
+      newDailyFeedback.status = dailyFeedback.status
+
+      if (dailyFeedback.feedbackText) {
+        newDailyFeedback.feedbackText = dailyFeedback.feedbackText
+      }
+
+      challengeParticipation.dailyFeedback.push(newDailyFeedback)
     })
   }
 
-  // Async?
-  challengeParticipation.save()
-
-  res.json(challengeParticipation.toJSON())
+  challengeParticipation.save().then((savedChallengePart) => {
+    return res.json(savedChallengePart.toJSON())
+  }).catch((err) => {
+    console.log("Error saving challenge part")
+    console.log(err)
+    return res.sendStatus(500)
+  })
 })
 
 router.post('/', auth.required, (req, res) => {

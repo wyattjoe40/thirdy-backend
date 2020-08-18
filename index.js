@@ -3,6 +3,7 @@ const app = express()
 const port = 3001
 const mongoose = require('mongoose')
 const bodyparser = require('body-parser')
+const moment = require('moment')
 
 /**
  * Body parsers
@@ -28,7 +29,7 @@ db.once('open', function() {
 require('./models/Challenge')
 require('./models/User')
 require('./models/ChallengeParticipation')
-require('./models/DailyFeedback')
+//require('./models/DailyFeedback')
 //require('./mock/mockChallenges')
 
 app.use((req, res, next) => {

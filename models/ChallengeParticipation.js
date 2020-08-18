@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const moment = require('moment')
 
 const dailyFeedbackSchema = new Schema({
   day: { type: Number, required: true},
@@ -28,8 +29,13 @@ challengeParticipationSchema.methods.toJSON = function() {
     id: this._id,
     challenge: this.challenge.toMinimalJSON(),
     status: this.status,
+    dayOfChallenge: this.calculateDayOfChallenge(),
     dailyFeedback: this.dailyFeedback,
   }
+}
+
+challengeParticipationSchema.methods.calculateDayOfChallenge = function() {
+  return (moment().startOf('day').diff(moment(this.createdAt).startOf('day'), 'day') + 1)
 }
 
 challengeParticipationSchema.methods.addDailyFeedback = function(dailyFeedbackArray) {
