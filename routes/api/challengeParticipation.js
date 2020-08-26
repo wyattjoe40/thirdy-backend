@@ -24,7 +24,7 @@ router.param('participationId', (req, res, next, id) => {
 })
 
 function verifyUserIsAllowedAccess(req, res, next) {
-  if (req.challengeParticipation.user.toString() !== req.user.id) {
+  if (req.challengeParticipation.user.toString() !== req.authUser.id) {
     return res.sendStatus(403)
   }
 
@@ -93,7 +93,7 @@ router.post('/', auth.required, (req, res) => {
     return res.sendStatus(404)
   }
 
-  User.findOne({username: req.user.username}, (err, user) => {
+  User.findOne({username: req.authUser.username}, (err, user) => {
     if (err) {
       console.log(err)
       return res.sendStatus(500)

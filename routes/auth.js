@@ -3,7 +3,7 @@ const config = require('../config')
 
 function setAuthInfoOnReq(req, verifiedJwt) {
   req.jwt = verifiedJwt
-  req.user = { username: verifiedJwt.body.sub, id: verifiedJwt.body.subId }
+  req.authUser = { username: verifiedJwt.body.sub, id: verifiedJwt.body.subId }
 }
 
 function jwtRequired(req, res, next) {

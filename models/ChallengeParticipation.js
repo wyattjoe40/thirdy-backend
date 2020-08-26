@@ -38,6 +38,15 @@ challengeParticipationSchema.methods.toJSON = function() {
   }
 }
 
+challengeParticipationSchema.methods.toProfileJSON = function() {
+  return {
+    id: this._id,
+    challenge: this.challenge.toMinimalJSON(),
+    status: this.status,
+    dayOfChallenge: this.calculateDayOfChallenge()
+  }
+}
+
 challengeParticipationSchema.methods.calculateDayOfChallenge = function() {
   return (moment().startOf('day').diff(moment(this.createdAt).startOf('day'), 'day') + 1)
 }

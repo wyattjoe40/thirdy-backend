@@ -7,7 +7,7 @@ const User = mongoose.model('User')
 const ChallengeParticipation = mongoose.model('ChallengeParticipation')
 const { isEmptyOrUndefined } = require('./stringHelpers')
 const { setJwtForUser } = require('./jwt')
-const { BlobServiceClient, StorageSharedKeyCredential} = require('@azure/storage-blob')
+const { BlobServiceClient, StorageSharedKeyCredential } = require('@azure/storage-blob')
 const multer = require('multer')
 const upload = multer()
 
@@ -15,8 +15,25 @@ const azureCredentials = new StorageSharedKeyCredential(config.azureStorageAccou
 const baseAzureUrl = `https://${config.azureStorageAccountName}.blob.core.windows.net`
 const blobServiceClient = new BlobServiceClient(baseAzureUrl, azureCredentials)
 
+router.param('username', (req, res, next, username) => {
+  // grab user object, put it on the request
+  User.findOne({ username: username }, (err, user) => {
+    if (err) {
+      console.log(err)
+      return res.sendStatus(500)
+    }
+
+    if (!user) {
+      return res.sendStatus(404)
+    }
+
+    req.user = user
+    next()
+  })
+})
+
 router.get('/users', auth.required, (req, res) => {
-  User.findOne({ username: req.jwt.body.sub }, (err, user) => {
+  User.findOne({ username: req.authUser.username }, (err, user) => {
     if (err) {
       console.log('users findOne err: ' + JSON.stringify(err))
       return res.status(500).send("Could not query for the user")
@@ -28,6 +45,25 @@ router.get('/users', auth.required, (req, res) => {
 
     res.json(user.toProfileJSON())
   })
+})
+
+router.get('/users/:username', auth.optional, (req, res) => {
+  res.json(req.user.toProfileJSON())
+})
+
+router.get('/users/:username/participating-challenges', auth.optional, (req, res) => {
+  ChallengeParticipation.find({ user: req.user }, (err, results) => {
+    if (err) {
+      console.log(err)
+      return res.sendStatus(500);
+    }
+
+    if (!results) {
+      return res.json([])
+    }
+
+    return res.json(results.map(part => part.toProfileJSON()))
+  }).populate('challenge');
 })
 
 router.post('/user/login', auth.optional, (req, res) => {
@@ -63,7 +99,7 @@ router.post('/user/login', auth.optional, (req, res) => {
 })
 
 router.post('/user/profile-picture', auth.required, upload.single('profile-picture'), (req, res) => {
-  User.findOne({ username: req.user.username }, (err, user) => {
+  User.findOne({ username: req.authUser.username }, (err, user) => {
     if (err) {
       console.log(err)
       return res.sendStatus(500)
@@ -120,7 +156,7 @@ router.post('/user/profile-picture', auth.required, upload.single('profile-pictu
           return res.sendStatus(500)
         }
 
-        return res.json({profilePictureUrl: savedUser.profilePictureUrl})
+        return res.json({ profilePictureUrl: savedUser.profilePictureUrl })
       })
     }).catch(err => {
       console.log("Error uploading blob: ")
@@ -140,7 +176,7 @@ router.get('/user/participating-challenges', auth.required, (req, res) => {
   var statusForDatabaseQuery
   const statusParameter = req.query["challenge-status"]
   if (statusParameter) {
-    switch(statusParameter) {
+    switch (statusParameter) {
       case 'active':
         statusForDatabaseQuery = 'active'
         break;
@@ -154,7 +190,7 @@ router.get('/user/participating-challenges', auth.required, (req, res) => {
     }
   }
 
-  var query = {user: req.user.id}
+  var query = { user: req.authUser.id }
   if (statusParameter) {
     query.status = statusForDatabaseQuery
   }
