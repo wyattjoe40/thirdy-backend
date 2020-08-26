@@ -4,6 +4,9 @@ const port = 3001
 const mongoose = require('mongoose')
 const bodyparser = require('body-parser')
 const moment = require('moment')
+const { checkEnvVariables } = require('./config')
+
+checkEnvVariables()
 
 /**
  * Body parsers

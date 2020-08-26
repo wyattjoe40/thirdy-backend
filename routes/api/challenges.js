@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const mongoose = require('mongoose')
 const Challenge = mongoose.model('Challenge')
+const ChallengeParticipation = mongoose.model('ChallengeParticipation')
 const { mongooseCatchHandler } = require('./mongooseHelper')
 const auth = require('../auth')
 
@@ -53,6 +54,29 @@ router.put('/', auth.required, (req, res) => {
   newChallenge.save()
 
   res.json(newChallenge.toChallengeJSON())
+})
+
+router.get('/:challenge/users', auth.optional, (req, res) => {
+  // get any query params (right now just 'status')
+  var dbQueryConditions = {}
+  const status = req.query.status
+  if (status) {
+    dbQueryConditions.status = status
+  }
+
+  dbQueryConditions.challenge = req.challenge._id
+  // create query for ChallengeParticipation, where challengeId is equal to this challenge, and status is active
+  ChallengeParticipation.find(dbQueryConditions, (err, parts) => {
+    if (err) {
+      console.log("Error getting challenge parts from DB, err: ")
+      console.log(err)
+      return res.sendStatus(500)
+    }
+
+    // grab users from ChallengeParticipation objects and return the users
+    const users = parts.map((part) => (part.user)).filter((user, index, arr) => (arr.indexOf(user) === index))
+    return res.json(users.map((user) => (user.toProfileJSON())))
+  }).populate('user')
 })
 
 module.exports = router

@@ -45,6 +45,16 @@ router.put('/:participationId', auth.required, verifyUserIsAllowedAccess, (req, 
     challengeParticipation.status = status;
   }
 
+  const preChallengeComment = req.body.preChallengeComment
+  if (preChallengeComment) {
+    challengeParticipation.preChallengeComment = preChallengeComment
+  }
+
+  const postChallengeComment = req.body.postChallengeComment
+  if (postChallengeComment) {
+    challengeParticipation.postChallengeComment = postChallengeComment
+  }
+
   const dailyFeedbacks = req.body.dailyFeedback
   if (dailyFeedbacks && dailyFeedbacks.length) {
     // create the objects and add them to the DB

@@ -15,6 +15,8 @@ const dailyFeedbackSchema = new Schema({
 const challengeParticipationSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User'},
   challenge: { type: Schema.Types.ObjectId, ref: 'Challenge'},
+  preChallengeComment: String,
+  postChallengeComment: String,
   status: {
     type: String,
     enum: ["active", "complete", "abandoned"],
@@ -29,6 +31,8 @@ challengeParticipationSchema.methods.toJSON = function() {
     id: this._id,
     challenge: this.challenge.toMinimalJSON(),
     status: this.status,
+    preChallengeComment: this.preChallengeComment,
+    postChallengeComment: this.postChallengeComment,
     dayOfChallenge: this.calculateDayOfChallenge(),
     dailyFeedback: this.dailyFeedback,
   }
