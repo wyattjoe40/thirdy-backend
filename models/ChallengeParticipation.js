@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const moment = require('moment')
+const moment = require('moment-timezone')
 
 const dailyFeedbackSchema = new Schema({
   day: { type: Number, required: true},
@@ -13,17 +13,17 @@ const dailyFeedbackSchema = new Schema({
 }, {timestamps: true});
 
 const challengeParticipationSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User'},
-  challenge: { type: Schema.Types.ObjectId, ref: 'Challenge'},
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true},
+  challenge: { type: Schema.Types.ObjectId, ref: 'Challenge', required: true},
   preChallengeComment: String,
   postChallengeComment: String,
+  timezone: { type: String, required: true},
   status: {
     type: String,
     enum: ["active", "complete", "abandoned"],
     required: true
   },
-  //dailyFeedback: [{day: Number, completed: Boolean, feedbackText: String}],
-  dailyFeedback: [dailyFeedbackSchema],//[{ type: Schema.Types.ObjectId, ref: 'DailyFeedback'}]
+  dailyFeedback: [dailyFeedbackSchema],
 }, {timestamps: true})
 
 challengeParticipationSchema.methods.toJSON = function() {
@@ -47,8 +47,12 @@ challengeParticipationSchema.methods.toProfileJSON = function() {
   }
 }
 
+// Actual timezone: PDT (-7)
+// created: 16:00 1/1 now: 17:30 1/1, diff: 0 days
+// created: 23:00 - 7:00 1/1 now: 00:30 - 7:00 1/2
+// (00:30 1/2 => 00:00 1/2) - (23:00 1/1 => 00:00 1/1) = 1
 challengeParticipationSchema.methods.calculateDayOfChallenge = function() {
-  return (moment().startOf('day').diff(moment(this.createdAt).startOf('day'), 'day') + 1)
+  return (moment().tz(this.timezone).startOf('day').diff(moment(this.createdAt).tz(this.timezone).startOf('day'), 'day') + 1)
 }
 
 challengeParticipationSchema.methods.addDailyFeedback = function(dailyFeedbackArray) {

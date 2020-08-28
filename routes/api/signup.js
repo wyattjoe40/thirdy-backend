@@ -21,6 +21,7 @@ router.post('/', (req, res) => {
   const email = req.body.email
   const password = req.body.password
   const newsletterOptIn = req.body.newsletterOptIn
+  const timezone = req.body.timezone
 
   // validate the fields are good 
   // TODO wydavis: Verify email is valid format, validate password is valid format, verify all have valid characters
@@ -34,6 +35,10 @@ router.post('/', (req, res) => {
 
   if (isEmptyOrUndefined(password)) {
     return res.status(401).json({field: "password", error: "Password cannot be empty."})
+  }
+
+  if (isEmptyOrUndefined(timezone)) {
+    return res.status(401).json({field: "timezone", error: "Timezone cannot be empty."})
   }
 
   function sendBackJWT(user) {
@@ -53,7 +58,8 @@ router.post('/', (req, res) => {
     const newUser = new User({
       username: username,
       email: email,
-      password, password,
+      password: password,
+      timezone: timezone,
       newsletterOptIn: newsletterOptIn
     })
 
@@ -64,8 +70,8 @@ router.post('/', (req, res) => {
       }
 
       console.log("Saved user: " + userSaved.username)
-      setJwtForUser(user, res)
-      res.json(user.toProfileJSON())
+      setJwtForUser(userSaved, res)
+      res.json(userSaved.toJSON())
     })
   }
 

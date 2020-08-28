@@ -8,7 +8,7 @@ const ChallengeParticipation = mongoose.model('ChallengeParticipation')
 
 router.param('participationId', (req, res, next, id) => {
   // get the participation
-  ChallengeParticipation.findById(id).populate('challenge').populate('dailyFeedback').exec((err, part) => {
+  ChallengeParticipation.findById(id).populate('challenge').exec((err, part) => {
     if (err) {
       console.log(err)
       return res.sendStatus(500)
@@ -119,6 +119,7 @@ router.post('/', auth.required, (req, res) => {
         user: user,
         challenge: challenge,
         status: 'active',
+        timezone: user.timezone,
         dailyFeedback: [],
       })
       newChallengeParticipation.save((err, savedObject) => {

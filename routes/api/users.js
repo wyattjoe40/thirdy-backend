@@ -43,7 +43,7 @@ router.get('/users', auth.required, (req, res) => {
       return res.status(404)
     }
 
-    res.json(user.toProfileJSON())
+    res.json(user.toJSON())
   })
 })
 
@@ -93,7 +93,7 @@ router.post('/user/login', auth.optional, (req, res) => {
 
     // if exists, get the body and send back
     setJwtForUser(user, res)
-    return res.json(user.toProfileJSON())
+    return res.json(user.toJSON())
   })
 
 })
@@ -166,6 +166,7 @@ router.post('/user/profile-picture', auth.required, upload.single('profile-pictu
   })
 })
 
+// TODO wydavis: remove auth.required because otherwise we can't call if already logged out
 router.post('/user/logout', auth.required, (req, res) => {
   res.clearCookie('jwt').sendStatus(200)
 })
