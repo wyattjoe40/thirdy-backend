@@ -11,6 +11,7 @@ const { setupNewsletter } = require('./newsletter')
 
 checkEnvVariables()
 
+
 setupNewsletter()
 
 /**
