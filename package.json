@@ -4,17 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run watch:css && react-scripts start",
-    "build": "npm run build:css && react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "build:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
-    "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css"
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@azure/storage-blob": "^12.2.0-preview.1",
+    "@mailchimp/mailchimp_marketing": "^3.0.14",
+    "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -25,5 +22,8 @@
     "mongoose": "^5.9.27",
     "multer": "^1.4.2",
     "njwt": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

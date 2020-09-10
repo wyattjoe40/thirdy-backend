@@ -1,0 +1,3 @@
+
+mongodump --port 27000 --host localhost -d thirdy-dev -o .
+mongorestore --port 27000 --host localhost -d thirdy-dev thirdy-dev

@@ -28,11 +28,6 @@ router.get('/', (req, res) => {
       return res.sendStatus(404)
     }
 
-    challenges.forEach((challenge) => {
-      console.log(challenge.toChallengeJSON())
-    })
-
-    //res.json({"challenges": challenges.map(challenge => challenge.toJSON())})
     res.json({"challenges": challenges.map(challenge => challenge.toJSON())})
   }).catch(mongooseCatchHandler(() => { res.sendStatus(500) }))
 })
@@ -53,7 +48,7 @@ router.put('/', auth.required, (req, res) => {
   newChallenge.author = new mongoose.Types.ObjectId(req.jwt.body.subId)
   newChallenge.save()
 
-  res.json(newChallenge.toChallengeJSON())
+  res.json(newChallenge.toJSON())
 })
 
 router.get('/:challenge/users', auth.optional, (req, res) => {

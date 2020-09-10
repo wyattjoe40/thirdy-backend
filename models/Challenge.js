@@ -13,13 +13,13 @@ challengeSchema.methods.createSlug = function() {
   // TODO wydavis: Implement and hookup
 }
 
-challengeSchema.methods.toChallengeJSON = function() {
+challengeSchema.methods.toJSON = function() {
   return {
     "slug": this.slug,
     "title": this.title,
     "description": this.description,
     "createdAt": this.createdAt,
-    "author": this.author,
+    "author": this.author.toProfileJSON(),
   }
 }
 

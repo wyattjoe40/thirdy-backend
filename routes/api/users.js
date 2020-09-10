@@ -81,7 +81,7 @@ router.post('/user/login', auth.optional, (req, res) => {
   }
 
   // check if it exists
-  User.findOne({ email: email, password: password }, (err, user) => {
+  User.findOne({ email: email }, (err, user) => {
     if (err) {
       return res.sendStatus(500)
     }
@@ -91,11 +91,21 @@ router.post('/user/login', auth.optional, (req, res) => {
       return res.status(401).json({ error: "Incorrect email or password" })
     }
 
-    // if exists, get the body and send back
-    setJwtForUser(user, res)
-    return res.json(user.toJSON())
-  })
+    user.comparePassword(password, (err, isMatch) => {
+      if (err) {
+        console.log(err)
+        return res.sendStatus(500)
+      }
 
+      if (isMatch) {
+        // if exists, get the body and send back
+        setJwtForUser(user, res)
+        return res.json(user.toJSON())
+      } else {
+        return res.status(401).json({ error: "Incorrect email or password" })
+      }
+    })
+  })
 })
 
 router.post('/user/profile-picture', auth.required, upload.single('profile-picture'), (req, res) => {
@@ -166,8 +176,7 @@ router.post('/user/profile-picture', auth.required, upload.single('profile-pictu
   })
 })
 
-// TODO wydavis: remove auth.required because otherwise we can't call if already logged out
-router.post('/user/logout', auth.required, (req, res) => {
+router.post('/user/logout', (req, res) => {
   res.clearCookie('jwt').sendStatus(200)
 })
 
@@ -182,11 +191,14 @@ router.get('/user/participating-challenges', auth.required, (req, res) => {
         statusForDatabaseQuery = 'active'
         break;
       case 'complete':
-        // TODO wydavis
+        statusForDatabaseQuery = 'complete'
         break;
       case 'abandoned':
+        statusForDatabaseQuery = 'abandoned'
         break;
       default:
+        // throw an error
+        res.status(400).send('Invalid status')
         break;
     }
   }

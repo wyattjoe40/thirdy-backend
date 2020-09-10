@@ -8,6 +8,9 @@ const ENV_VARS = [
   "JWT_SECRET",
   "AZURE_STORAGE_ACCOUNT_NAME",
   "AZURE_STORAGE_ACCOUNT_ACCESS_KEY",
+  "MAILCHIMP_AUDIENCE_ID",
+  "MAILCHIMP_API_KEY",
+  "MAILCHIMP_DOMAIN_PREFIX",
 ];
 
 module.exports = {
@@ -15,6 +18,9 @@ module.exports = {
   jwtSecret: process.env.JWT_SECRET,
   azureStorageAccountName: process.env.AZURE_STORAGE_ACCOUNT_NAME,
   azureStorageAccountAccessKey: process.env.AZURE_STORAGE_ACCOUNT_ACCESS_KEY,
+  mailchimpAudienceId: process.env.MAILCHIMP_AUDIENCE_ID,
+  mailchimpApiKey: process.env.MAILCHIMP_API_KEY,
+  mailchimpDomainPrefix: process.env.MAILCHIMP_DOMAIN_PREFIX,
 
   checkEnvVariables: function() {
     ENV_VARS.forEach(function(key) {
