@@ -41,24 +41,38 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
-      #- name: Docker - Build
-      #  run: docker build --tag backend .
-      #- name: Docker - Tag Latest
-      #  run: docker tag backend ${REGISTRY_DOMAIN}/thirdy/backend:latest
-      #- name: Docker - Tag Build Number
-      #  run: docker tag backend ${REGISTRY_DOMAIN}/thirdy/backend:${GITHUB_RUN_NUMBER}
-      #- name: Docker - Tag Version
-      #  run: docker tag backend ${REGISTRY_DOMAIN}/thirdy/backend:${VERSION}
+      - name: Docker - Build
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: build --tag backend . 
+      - name: Docker - Tag Latest
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:latest
+      - name: Docker - Tag Build Number
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ env.GITHUB_RUN_NUMBER }}
+      - name: Docker - Tag Version
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ env.VERSION }}
       - name: Docker - Login
+        if: success()
         uses: actions-hub/docker/login@master
         env:
           DOCKER_USERNAME: "thirdy"
           DOCKER_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
           DOCKER_REGISTRY_URL: ${{ env.REGISTRY_DOMAIN }}
-      #- name: Docker - Login - Manual
-      #  env:
-      #    DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-      #  run: echo "$DOCKER_REGISTRY_PASSWORD" | docker login --username thirdy --password-stdin
+      - name: Docker - Push Latest
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:latest
       #- name: Docker - Push Latest
       #  run: docker push ${REGISTRY_DOMAIN}/thirdy/backend:${VERSION}
       #- name: Docker - Push Build Number
