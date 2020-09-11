@@ -40,6 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - uses: actions/checkout@v2
       #- name: Docker - Build
       #  run: docker build --tag backend .
       #- name: Docker - Tag Latest
@@ -53,7 +54,7 @@ jobs:
         env:
           DOCKER_USERNAME: "thirdy"
           DOCKER_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-          DOCKER_REGISTRY_URL: $REGISTRY_DOMAIN
+          DOCKER_REGISTRY_URL: ${REGISTRY_DOMAIN}
       #- name: Docker - Login - Manual
       #  env:
       #    DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
