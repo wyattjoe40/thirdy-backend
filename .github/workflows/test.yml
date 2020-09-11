@@ -2,6 +2,12 @@
 
 name: CI
 
+#uses TODO for Docker
+
+env:
+  REGISTRY_DOMAIN: "thirdy.azurecr.io"
+  VERSION: 1.0
+
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
@@ -31,3 +37,32 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      #- name: Docker - Build
+      #  run: docker build --tag backend .
+      #- name: Docker - Tag Latest
+      #  run: docker tag backend ${REGISTRY_DOMAIN}/thirdy/backend:latest
+      #- name: Docker - Tag Build Number
+      #  run: docker tag backend ${REGISTRY_DOMAIN}/thirdy/backend:${GITHUB_RUN_NUMBER}
+      #- name: Docker - Tag Version
+      #  run: docker tag backend ${REGISTRY_DOMAIN}/thirdy/backend:${VERSION}
+      - name: Docker - Login
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: "thirdy"
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          DOCKER_REGISTRY_URL: ${{ REGISTRY_DOMAIN }}
+      #- name: Docker - Login - Manual
+      #  env:
+      #    DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+      #  run: echo "$DOCKER_REGISTRY_PASSWORD" | docker login --username thirdy --password-stdin
+      #- name: Docker - Push Latest
+      #  run: docker push ${REGISTRY_DOMAIN}/thirdy/backend:${VERSION}
+      #- name: Docker - Push Build Number
+      #  run: docker push ${REGISTRY_DOMAIN}/thirdy/backend:${GITHUB_RUN_NUMBER}
+      #- name: Docker - Push Version
+      #  run: docker push ${REGISTRY_DOMAIN}/thirdy/backend:${VERSION}
+        
