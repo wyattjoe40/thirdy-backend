@@ -4,8 +4,8 @@ EXPOSE 3001
 
 WORKDIR /usr/src/app
 
-COPY . .
+RUN ["npm", "install"]
 
-RUN ["npm", "install", "bcrypt"]
+COPY . .
 
 CMD ["node", "index.js"]
