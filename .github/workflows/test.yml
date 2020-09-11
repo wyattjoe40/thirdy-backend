@@ -41,6 +41,13 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
+      - name: Docker - Login
+        if: success()
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: "thirdy"
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          DOCKER_REGISTRY_URL: ${{ env.REGISTRY_DOMAIN }}
       - name: Docker - Build
         if: success()
         uses: actions-hub/docker@master
@@ -61,13 +68,6 @@ jobs:
         uses: actions-hub/docker@master
         with:
           args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ env.VERSION }}
-      - name: Docker - Login
-        if: success()
-        uses: actions-hub/docker/login@master
-        env:
-          DOCKER_USERNAME: "thirdy"
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-          DOCKER_REGISTRY_URL: ${{ env.REGISTRY_DOMAIN }}
       - name: Docker - Push Latest
         if: success()
         uses: actions-hub/docker@master
