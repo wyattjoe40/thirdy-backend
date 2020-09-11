@@ -73,10 +73,14 @@ jobs:
         uses: actions-hub/docker@master
         with:
           args: push ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:latest
-      #- name: Docker - Push Latest
-      #  run: docker push ${REGISTRY_DOMAIN}/thirdy/backend:${VERSION}
-      #- name: Docker - Push Build Number
-      #  run: docker push ${REGISTRY_DOMAIN}/thirdy/backend:${GITHUB_RUN_NUMBER}
-      #- name: Docker - Push Version
-      #  run: docker push ${REGISTRY_DOMAIN}/thirdy/backend:${VERSION}
+      - name: Docker - Push Build Number
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ github.run_number }}
+      - name: Docker - Push Version
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ env.VERSION }}
         
