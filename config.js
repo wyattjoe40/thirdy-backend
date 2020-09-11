@@ -11,6 +11,10 @@ const ENV_VARS = [
   "MAILCHIMP_AUDIENCE_ID",
   "MAILCHIMP_API_KEY",
   "MAILCHIMP_DOMAIN_PREFIX",
+  "MONGO_DOMAIN",
+  "MONGO_DB_NAME",
+  "MONGO_USERNAME",
+  "MONGO_PASSWORD",
 ];
 
 module.exports = {
@@ -21,6 +25,10 @@ module.exports = {
   mailchimpAudienceId: process.env.MAILCHIMP_AUDIENCE_ID,
   mailchimpApiKey: process.env.MAILCHIMP_API_KEY,
   mailchimpDomainPrefix: process.env.MAILCHIMP_DOMAIN_PREFIX,
+  mongoDomain: process.env.MONGO_DOMAIN,
+  mongoDbName: process.env.MONGO_DB_NAME,
+  mongoUsername: process.env.MONGO_USERNAME,
+  mongoPassword: process.env.MONGO_PASSWORD,
 
   checkEnvVariables: function() {
     ENV_VARS.forEach(function(key) {

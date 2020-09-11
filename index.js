@@ -4,12 +4,11 @@ const port = 3001
 const mongoose = require('mongoose')
 const bodyparser = require('body-parser')
 const moment = require('moment')
-const { checkEnvVariables } = require('./config')
-const mailchimp = require('@mailchimp/mailchimp_marketing')
 const config = require('./config')
+const mailchimp = require('@mailchimp/mailchimp_marketing')
 const { setupNewsletter } = require('./newsletter')
 
-checkEnvVariables()
+config.checkEnvVariables()
 
 
 setupNewsletter()
@@ -26,7 +25,7 @@ app.use(bodyparser.json())
  */
 
  // TODO wydavis: add conditional for DB for prod vs dev
-mongoose.connect('mongodb://thirdy-db:27017/thirdy-dev', {useNewUrlParser: true});
+mongoose.connect(`mongodb+srv://${config.mongoUsername}:${encodeURI(config.mongoPassword)}@${config.mongoDomain}/${config.mongoDbName}?w=majority`, {useNewUrlParser: true});
 const db = mongoose.connection;
 db.on('error', function() {
   console.error.bind(console, 'connection error:')
