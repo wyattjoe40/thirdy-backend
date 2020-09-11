@@ -2,13 +2,18 @@
 
 name: CI
 
+#uses TODO for Docker
+
+env:
+  REGISTRY_DOMAIN: "thirdy.azurecr.io"
+  VERSION: "1.0"
+
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
   push:
     branches: [ testing-ci-cd ]
-  pull_request:
-    branches: [ testing-ci-cd ]
+  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -31,3 +36,51 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker - Login
+        if: success()
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: "thirdy"
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          DOCKER_REGISTRY_URL: ${{ env.REGISTRY_DOMAIN }}
+      - name: Docker - Build
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: build --tag backend . 
+      - name: Docker - Tag Latest
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:latest
+      - name: Docker - Tag Build Number
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ github.run_number }}
+      - name: Docker - Tag Version
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ env.VERSION }}
+      - name: Docker - Push Latest
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:latest
+      - name: Docker - Push Build Number
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ github.run_number }}
+      - name: Docker - Push Version
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ env.VERSION }}
+        
