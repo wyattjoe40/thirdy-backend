@@ -54,7 +54,7 @@ jobs:
         env:
           DOCKER_USERNAME: "thirdy"
           DOCKER_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-          DOCKER_REGISTRY_URL: ${REGISTRY_DOMAIN}
+          DOCKER_REGISTRY_URL: ${{ env.REGISTRY_DOMAIN }}
       #- name: Docker - Login - Manual
       #  env:
       #    DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
