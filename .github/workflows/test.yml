@@ -62,7 +62,7 @@ jobs:
         if: success()
         uses: actions-hub/docker@master
         with:
-          args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ env.GITHUB_RUN_NUMBER }}
+          args: tag backend ${{ env.REGISTRY_DOMAIN }}/thirdy/backend:${{ github.run_number }}
       - name: Docker - Tag Version
         if: success()
         uses: actions-hub/docker@master
