@@ -4,8 +4,8 @@ EXPOSE 3001
 
 WORKDIR /usr/src/app
 
-RUN ["npm", "install"]
-
 COPY . .
+
+RUN ["npm", "install"]
 
 CMD ["node", "index.js"]
