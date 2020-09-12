@@ -10,6 +10,9 @@ const { setupNewsletter } = require('./newsletter')
 
 config.checkEnvVariables()
 
+if (config.testMode) {
+  console.log("Running in test mode...")
+}
 
 setupNewsletter()
 

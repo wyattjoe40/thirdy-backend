@@ -10,7 +10,7 @@ function setJwtForUser(user, res) {
     httpOnly: true,
     //domain: "http://localhost:3001"
   }
-  if (config.production) {
+  if (!config.testMode) {
     cookieOptions.sameSite = "None"
     cookieOptions.secure = true
   }
