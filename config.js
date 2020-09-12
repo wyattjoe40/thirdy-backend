@@ -15,6 +15,7 @@ const ENV_VARS = [
   "MONGO_DB_NAME",
   "MONGO_USERNAME",
   "MONGO_PASSWORD",
+  "PRODUCTION",
 ];
 
 module.exports = {
@@ -29,6 +30,7 @@ module.exports = {
   mongoDbName: process.env.MONGO_DB_NAME,
   mongoUsername: process.env.MONGO_USERNAME,
   mongoPassword: process.env.MONGO_PASSWORD,
+  production: process.env.PRODUCTION | false,
 
   checkEnvVariables: function() {
     ENV_VARS.forEach(function(key) {
