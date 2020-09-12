@@ -1,3 +1,5 @@
 
 mongodump --port 27000 --host localhost -d thirdy-dev -o .
 mongorestore --port 27000 --host localhost -d thirdy-dev thirdy-dev
+# Note: This command did not work. I used a GUI instead.
+mongorestore --host thirdy.oxwcw.azure.mongodb.net --username=wyatt --password=<password> -d thirdy-dev thirdy-dev
