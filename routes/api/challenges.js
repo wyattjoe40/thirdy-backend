@@ -20,9 +20,26 @@ router.param('challenge', (req, res, next, slug) => {
 router.get('/', (req, res) => {
   // get the first 20 params. If nothing was passed or if 0 was passed in then use 20.
   var limit = (parseInt(req.query.limit) || 20)
+  // right now the filter searches the title
+  var filter = req.query.filter
+
+  var queryOptions = {}
+  var sortOptions = {}
+  var projectOptions = {}
+  if (filter) {
+    queryOptions = {
+      $text: { $search: filter }
+    }
+    projectOptions = {
+      score: { $meta: "textScore" }
+    }
+    sortOptions = {
+      score: { $meta: "textScore" }
+    }
+  }
 
   // query mongodb for challenges
-  Challenge.find().populate('author').limit(limit).exec().then((challenges) => {
+  Challenge.find(queryOptions, projectOptions).sort(sortOptions).populate('author').limit(limit).exec().then((challenges) => {
     if (!challenges) {
       console.log("No challenges came back")
       return res.sendStatus(404)
