@@ -57,11 +57,16 @@ router.put('/:participationId', auth.required, verifyUserIsAllowedAccess, (req, 
 
   const dailyFeedbacks = req.body.dailyFeedback
   if (dailyFeedbacks && dailyFeedbacks.length) {
+    var hasDay30Feedback
     // create the objects and add them to the DB
     dailyFeedbacks.forEach((dailyFeedback) => {
       if (!dailyFeedback.day || !dailyFeedback.status) {
         // invalid dailyFeedback object
         return res.sendStatus(400)
+      }
+
+      if (dailyFeedback.day === 30) {
+        hasDay30Feedback = true
       }
 
       const newDailyFeedback = {}
@@ -74,6 +79,19 @@ router.put('/:participationId', auth.required, verifyUserIsAllowedAccess, (req, 
 
       challengeParticipation.dailyFeedback.push(newDailyFeedback)
     })
+
+    if (hasDay30Feedback) {
+      challengeParticipation.status = 'complete'
+      challengeParticipation.completedDay = 30
+
+      Challenge.findOneAndUpdate({ _id: challengeParticipation.challenge._id}, {$inc: { 'completedCount': 1}})
+      .then((savedChallenge) => {
+        console.log("Saved challenge completed count")
+      }).catch(err => {
+        console.log("err saving challenge count: ")
+        console.log(err)
+      })
+    }
   }
 
   challengeParticipation.save().then((savedChallengePart) => {

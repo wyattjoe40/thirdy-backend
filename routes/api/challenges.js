@@ -24,22 +24,15 @@ router.get('/', (req, res) => {
   var filter = req.query.filter
 
   var queryOptions = {}
-  var sortOptions = {}
-  var projectOptions = {}
   if (filter) {
+    const filterList = filter.split(' ').filter(word => word).map(word => new RegExp(`${word}`, 'i'))
     queryOptions = {
-      $text: { $search: filter }
-    }
-    projectOptions = {
-      score: { $meta: "textScore" }
-    }
-    sortOptions = {
-      score: { $meta: "textScore" }
+      title: { $in: filterList }
     }
   }
 
   // query mongodb for challenges
-  Challenge.find(queryOptions, projectOptions).sort(sortOptions).populate('author').limit(limit).exec().then((challenges) => {
+  Challenge.find(queryOptions).populate('author').limit(limit).exec().then((challenges) => {
     if (!challenges) {
       console.log("No challenges came back")
       return res.sendStatus(404)

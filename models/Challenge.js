@@ -3,10 +3,11 @@ const Schema = mongoose.Schema
 
 const challengeSchema = new Schema({
   slug: { type: String, lowercase: true, unique: true },
-  title: { type: String, text: true },
+  title: String,
   description: String,
   createdAt: String,
   author: { type: Schema.Types.ObjectId, ref: 'User' },
+  completedCount: { type: Number, default: 0 },
 }, { timestamps: true });
 
 challengeSchema.methods.createSlug = function () {
@@ -20,6 +21,7 @@ challengeSchema.methods.toJSON = function () {
     "description": this.description,
     "createdAt": this.createdAt,
     "author": this.author.toProfileJSON(),
+    "completedCount": this.completedCount,
   }
 }
 
@@ -27,6 +29,7 @@ challengeSchema.methods.toMinimalJSON = function () {
   return {
     "slug": this.slug,
     "title": this.title,
+    "completedCount": this.completedCount,
   }
 }
 

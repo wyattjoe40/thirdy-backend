@@ -17,6 +17,7 @@ const challengeParticipationSchema = new Schema({
   challenge: { type: Schema.Types.ObjectId, ref: 'Challenge', required: true},
   preChallengeComment: String,
   postChallengeComment: String,
+  completedDay: Number,
   timezone: { type: String, required: true},
   status: {
     type: String,
@@ -52,7 +53,11 @@ challengeParticipationSchema.methods.toProfileJSON = function() {
 // created: 23:00 - 7:00 1/1 now: 00:30 - 7:00 1/2
 // (00:30 1/2 => 00:00 1/2) - (23:00 1/1 => 00:00 1/1) = 1
 challengeParticipationSchema.methods.calculateDayOfChallenge = function() {
-  return (moment().tz(this.timezone).startOf('day').diff(moment(this.createdAt).tz(this.timezone).startOf('day'), 'day') + 1)
+  if (this.completedDay) {
+    return this.completedDay
+  }
+
+  return Math.min(30, (moment().tz(this.timezone).startOf('day').diff(moment(this.createdAt).tz(this.timezone).startOf('day'), 'day') + 1))
 }
 
 challengeParticipationSchema.methods.addDailyFeedback = function(dailyFeedbackArray) {
