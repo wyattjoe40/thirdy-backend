@@ -50,15 +50,17 @@ router.get('/:challenge', (req, res) => {
   res.json(challenge.toJSON())
 })
 
-router.put('/', auth.required, (req, res) => {
+router.post('/', auth.required, (req, res) => {
   const newChallenge = new Challenge();
-  newChallenge.slug = "a-challenge-title-here-" + (new Date()).getTime()
-  newChallenge.title = "A challenge title here"
-  newChallenge.description = "My description and stuff"
+  newChallenge.title = req.body.title
+  newChallenge.description = req.body.description
   newChallenge.author = new mongoose.Types.ObjectId(req.jwt.body.subId)
-  newChallenge.save()
-
-  res.json(newChallenge.toJSON())
+  newChallenge.save().then((doc) => {
+    res.json(doc.toMinimalJSON())
+  }).catch((err) => {
+    console.log(err)
+    res.sendStatus(500)
+  })
 })
 
 router.get('/:challenge/users', auth.optional, (req, res) => {

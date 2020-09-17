@@ -10,9 +10,21 @@ const challengeSchema = new Schema({
   completedCount: { type: Number, default: 0 },
 }, { timestamps: true });
 
-challengeSchema.methods.createSlug = function () {
-  // TODO wydavis: Implement and hookup
-}
+challengeSchema.pre('validate', function (next) {
+  if (!this.slug) {
+    this.slugify();
+  }
+
+  next();
+});
+
+challengeSchema.methods.slugify = function () {
+  this.slug = this.title
+    .toLowerCase()
+    .replace(/[^\w ]+/g, '')
+    .replace(/ +/g, '-')
+    .substr(0, 100)
+};
 
 challengeSchema.methods.toJSON = function () {
   return {
