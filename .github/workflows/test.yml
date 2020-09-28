@@ -6,7 +6,7 @@ name: CI
 
 env:
   REGISTRY_DOMAIN: "thirdy.azurecr.io"
-  VERSION: "1.0"
+  VERSION: "1.0.1"
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
