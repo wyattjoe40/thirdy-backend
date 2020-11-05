@@ -4,4 +4,4 @@
 
 ## Thirdy Backend
 
-This repo is the backend portion of the Thirdy website. It is built using NodeJS, Express, MongoDB, and Mongoose.
+This repo is the backend portion of the Thirdy website. It is built using NodeJS, Express, MongoDB, and Mongoose. The server runs in a container on Azure.
